@@ -1,72 +1,80 @@
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Scanner;
 import java.util.Stack;
 
-interface PalindromeStrategy {
-    boolean check(String input);
-}
+public class PalindromeCheckerApp {
 
-class StackStrategy implements PalindromeStrategy {
-    public boolean check(String input) {
-        String cleaned = input.toLowerCase().replaceAll("[^a-z0-9]", "");
+    static String clean(String input) {
+        return input.toLowerCase().replaceAll("[^a-z0-9]", "");
+    }
+
+    static boolean stackApproach(String input) {
+        String cleaned = clean(input);
         Stack<Character> stack = new Stack<>();
-        for (char c : cleaned.toCharArray()) {
-            stack.push(c);
-        }
+        for (char c : cleaned.toCharArray()) stack.push(c);
         for (char c : cleaned.toCharArray()) {
             if (c != stack.pop()) return false;
         }
         return true;
     }
-}
 
-class DequeStrategy implements PalindromeStrategy {
-    public boolean check(String input) {
-        String cleaned = input.toLowerCase().replaceAll("[^a-z0-9]", "");
+    static boolean dequeApproach(String input) {
+        String cleaned = clean(input);
         Deque<Character> deque = new ArrayDeque<>();
-        for (char c : cleaned.toCharArray()) {
-            deque.addLast(c);
-        }
+        for (char c : cleaned.toCharArray()) deque.addLast(c);
         while (deque.size() > 1) {
             if (!deque.pollFirst().equals(deque.pollLast())) return false;
         }
         return true;
     }
-}
 
-class PalindromeChecker {
-    private PalindromeStrategy strategy;
-
-    public PalindromeChecker(PalindromeStrategy strategy) {
-        this.strategy = strategy;
+    static boolean reverseApproach(String input) {
+        String cleaned = clean(input);
+        return cleaned.equals(new StringBuilder(cleaned).reverse().toString());
     }
 
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
+    static boolean twoPointerApproach(String input) {
+        String cleaned = clean(input);
+        int left = 0, right = cleaned.length() - 1;
+        while (left < right) {
+            if (cleaned.charAt(left++) != cleaned.charAt(right--)) return false;
+        }
+        return true;
     }
 
-    public boolean validate(String input) {
-        return strategy.check(input);
+    static long measure(Runnable approach, int iterations) {
+        long start = System.nanoTime();
+        for (int i = 0; i < iterations; i++) approach.run();
+        return System.nanoTime() - start;
     }
-}
 
-public class PalindromeCheckerApp {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        String testInput = "A man a plan a canal Panama";
+        int iterations = 100_000;
 
-        System.out.println("Choose strategy: 1 = Stack, 2 = Deque");
-        int choice = Integer.parseInt(scanner.nextLine().trim());
+        System.out.println("Input       : \"" + testInput + "\"");
+        System.out.println("Iterations  : " + iterations);
+        System.out.println("=".repeat(55));
+        System.out.printf("%-20s %-15s %-10s%n", "Algorithm", "Time (ms)", "Result");
+        System.out.println("-".repeat(55));
 
-        PalindromeStrategy strategy = (choice == 1) ? new StackStrategy() : new DequeStrategy();
-        PalindromeChecker checker = new PalindromeChecker(strategy);
+        long stackTime      = measure(() -> stackApproach(testInput), iterations);
+        long dequeTime      = measure(() -> dequeApproach(testInput), iterations);
+        long reverseTime    = measure(() -> reverseApproach(testInput), iterations);
+        long twoPointerTime = measure(() -> twoPointerApproach(testInput), iterations);
 
-        System.out.print("Enter string: ");
-        String input = scanner.nextLine();
+        System.out.printf("%-20s %-15.3f %-10s%n", "Stack",       stackTime / 1_000_000.0,      stackApproach(testInput));
+        System.out.printf("%-20s %-15.3f %-10s%n", "Deque",       dequeTime / 1_000_000.0,      dequeApproach(testInput));
+        System.out.printf("%-20s %-15.3f %-10s%n", "Reverse",     reverseTime / 1_000_000.0,    reverseApproach(testInput));
+        System.out.printf("%-20s %-15.3f %-10s%n", "Two Pointer", twoPointerTime / 1_000_000.0, twoPointerApproach(testInput));
 
-        System.out.println("Strategy: " + strategy.getClass().getSimpleName());
-        System.out.println(input + " -> " + (checker.validate(input) ? "Palindrome" : "Not a Palindrome"));
+        System.out.println("=".repeat(55));
 
-        scanner.close();
+        long fastest = Math.min(Math.min(stackTime, dequeTime), Math.min(reverseTime, twoPointerTime));
+        String winner = fastest == stackTime ? "Stack"
+                : fastest == dequeTime ? "Deque"
+                : fastest == reverseTime ? "Reverse"
+                : "Two Pointer";
+        System.out.println("Fastest Algorithm: " + winner);
     }
 }
