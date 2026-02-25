@@ -1,41 +1,43 @@
-import java.util.Scanner;
+import java.util.Stack;
+
 public class PalindromeCheckerApp {
 
-    // Application entry point
+    /**
+     * Application entry point for UC5.
+     * @param args Command-line arguments
+     */
     public static void main(String[] args) {
 
-        Scanner reader = new Scanner(System.in);
+        // Declare and initialize the input string
+        String input = "noon";
 
-        System.out.print("Input : ");
-        String input = reader.nextLine();
-
-        // Normalize input (optional improvement)
+        // Optional normalization (can remove if not required)
         input = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-        // Convert string into character array
-        char[] chars = input.toCharArray();
+        // Create a Stack to store characters
+        Stack<Character> stack = new Stack<>();
 
-        // Initialize pointers
-        int start = 0;
-        int end = chars.length - 1;
+        // Push each character of the string into the stack
+        for (char c : input.toCharArray()) {
+            stack.push(c);
+        }
 
-        // Assume it is palindrome
+        // Assume palindrome initially
         boolean isPalindrome = true;
 
-        // Compare characters until pointers cross
-        while (start < end) {
+        // Iterate again through original string
+        for (char c : input.toCharArray()) {
 
-            if (chars[start] != chars[end]) {
+            char poppedChar = stack.pop();
+
+            if (c != poppedChar) {
                 isPalindrome = false;
                 break;
             }
-
-            start++;
-            end--;
         }
 
+        // Display result
+        System.out.println("Input : " + input);
         System.out.println("Is Palindrome : " + isPalindrome);
-
-        reader.close();
     }
 }
