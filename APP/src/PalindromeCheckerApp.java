@@ -1,4 +1,3 @@
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class PalindromeCheckerApp {
@@ -9,29 +8,24 @@ public class PalindromeCheckerApp {
         System.out.print("Enter a string: ");
         String input = sc.nextLine().replaceAll("\\s+", "").toLowerCase();
 
-        LinkedList<Character> list = new LinkedList<>();
+        boolean result = check(input, 0, input.length() - 1);
 
-        for (char c : input.toCharArray()) {
-            list.add(c);
-        }
-
-        boolean isPalindrome = true;
-
-        while (list.size() > 1) {
-            char first = list.removeFirst();
-            char last = list.removeLast();
-
-            if (first != last) {
-                isPalindrome = false;
-                break;
-            }
-        }
-
-        if (isPalindrome)
+        if (result)
             System.out.println("The given string is a Palindrome.");
         else
             System.out.println("The given string is NOT a Palindrome.");
 
         sc.close();
+    }
+
+    private static boolean check(String s, int start, int end) {
+
+        if (start >= end)
+            return true;
+
+        if (s.charAt(start) != s.charAt(end))
+            return false;
+
+        return check(s, start + 1, end - 1);
     }
 }
