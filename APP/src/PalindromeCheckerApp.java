@@ -1,36 +1,41 @@
 import java.util.Scanner;
+public class PalindromeCheckerApp {
 
-public class PalindromeCheckerUC3 {
-
-    public static boolean isPalindrome(String input) {
-
-        // Normalize input (optional enhancement)
-        input = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-        String reversed = "";
-
-        // Reverse using for loop
-        for (int i = input.length() - 1; i >= 0; i--) {
-            reversed = reversed + input.charAt(i);
-        }
-
-        // Compare original and reversed
-        return input.equals(reversed);
-    }
-
+    // Application entry point
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner reader = new Scanner(System.in);
 
-        System.out.print("Enter a string: ");
-        String input = scanner.nextLine();
+        System.out.print("Input : ");
+        String input = reader.nextLine();
 
-        if (isPalindrome(input)) {
-            System.out.println("✅ It is a Palindrome.");
-        } else {
-            System.out.println("❌ Not a Palindrome.");
+        // Normalize input (optional improvement)
+        input = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+
+        // Convert string into character array
+        char[] chars = input.toCharArray();
+
+        // Initialize pointers
+        int start = 0;
+        int end = chars.length - 1;
+
+        // Assume it is palindrome
+        boolean isPalindrome = true;
+
+        // Compare characters until pointers cross
+        while (start < end) {
+
+            if (chars[start] != chars[end]) {
+                isPalindrome = false;
+                break;
+            }
+
+            start++;
+            end--;
         }
 
-        scanner.close();
+        System.out.println("Is Palindrome : " + isPalindrome);
+
+        reader.close();
     }
 }
